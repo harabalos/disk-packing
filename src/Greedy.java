@@ -28,11 +28,14 @@ public class Greedy {
     }
 
 
+    //The greedy Algorithm that takes as parameter a list and its elements get contributed to disks
     public static SinglyLinkedList<Disk> greedyMethod(SinglyLinkedList<Integer> mblist){
         SinglyLinkedList<Disk> diskList = new SinglyLinkedList<>();
         int counter = 0;
+        // Place items one by one
         for (int i = 0; i < mblist.length(); i++) {
             int j;
+            // Find the first bin that can accommodate
             for (j = 0; j < counter; j++) {
                 if(mblist.get(i)<=diskList.get(j).getFreeSpace()){
                     diskList.get(j).setFreeSpace(mblist.get(i));
@@ -40,7 +43,9 @@ public class Greedy {
                     break;
                 }
             }
+            // If no bin could accommodate 
             if(j==counter){
+                //new disk
                 Disk disk = new Disk();
                 diskList.add(disk);
                 disk.setId(j);
@@ -52,8 +57,10 @@ public class Greedy {
         return diskList;
     }
 
+    //Function that prints the results we want
     public static void printResult(SinglyLinkedList<Disk> diskList,MaxPQ folderList){
 
+        //the sum of all Mbs
         double sum=0;
         for (int index = 0; index < diskList.length(); index++) {
             sum+=(1000000 - (diskList.get(index)).getFreeSpace());
@@ -62,11 +69,13 @@ public class Greedy {
         System.out.println("\nSum of all folders: " + sum/1000000  + " TB");
         System.out.println("Total number of disks used = " + diskList.length());
 
+        //Print the results based in the priority queue that stores the remaining space.
         for (int j = 0; j < diskList.length(); j++) {
             for (int i = 0; i < diskList.length(); i++) {
                 if(folderList.get(1) == diskList.get(i).getFreeSpace()){
                     System.out.print(("id "+ diskList.get(i).getId() +" "+ folderList.getMax() + ": "));
                     diskList.get(i).getFolders().display();
+                    //End
                     if(folderList.size()==0){return;}
                 }
             }       
@@ -74,11 +83,16 @@ public class Greedy {
     }
 
 
+
+
+
     public static void main(String[] args) {
 
         try {
+            //read the given txt
             Scanner scan = new Scanner(new File(args[0]));
             SinglyLinkedList<Integer> mblist = readFile(scan);
+            //executes Greedy algorithm
             SinglyLinkedList<Disk> diskList = greedyMethod(mblist);
             MaxPQ folderList =  insertMaxPq(greedyMethod(mblist));
             printResult(diskList, folderList);
