@@ -1,4 +1,4 @@
-
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
@@ -26,5 +26,70 @@ public class Greedy {
         }
         return mpq;
     }
+
+
+    public static SinglyLinkedList<Disk> greedyMethod(SinglyLinkedList<Integer> mblist){
+        SinglyLinkedList<Disk> diskList = new SinglyLinkedList<>();
+        int counter = 0;
+        for (int i = 0; i < mblist.length(); i++) {
+            int j;
+            for (j = 0; j < counter; j++) {
+                if(mblist.get(i)<=diskList.get(j).getFreeSpace()){
+                    diskList.get(j).setFreeSpace(mblist.get(i));
+                    diskList.get(j).getFolders().add(mblist.get(i));
+                    break;
+                }
+            }
+            if(j==counter){
+                Disk disk = new Disk();
+                diskList.add(disk);
+                disk.setId(j);
+                diskList.get(counter).setFreeSpace(mblist.get(i));
+                diskList.get(counter).getFolders().add(mblist.get(i));
+                counter++;
+            }
+        }
+        return diskList;
+    }
+
+    public static void printResult(SinglyLinkedList<Disk> diskList,MaxPQ folderList){
+
+        double sum=0;
+        for (int index = 0; index < diskList.length(); index++) {
+            sum+=(1000000 - (diskList.get(index)).getFreeSpace());
+        }
+        //convert to TB
+        System.out.println("\nSum of all folders: " + sum/1000000  + " TB");
+        System.out.println("Total number of disks used = " + diskList.length());
+
+        for (int j = 0; j < diskList.length(); j++) {
+            for (int i = 0; i < diskList.length(); i++) {
+                if(folderList.get(1) == diskList.get(i).getFreeSpace()){
+                    System.out.print(("id "+ diskList.get(i).getId() +" "+ folderList.getMax() + ": "));
+                    diskList.get(i).getFolders().display();
+                    if(folderList.size()==0){return;}
+                }
+            }       
+    }
+    }
+
+
+    public static void main(String[] args) {
+
+        try {
+            Scanner scan = new Scanner(new File(args[0]));
+            SinglyLinkedList<Integer> mblist = readFile(scan);
+            SinglyLinkedList<Disk> diskList = greedyMethod(mblist);
+            MaxPQ folderList =  insertMaxPq(greedyMethod(mblist));
+            printResult(diskList, folderList);
+
+
+            scan.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
 }
